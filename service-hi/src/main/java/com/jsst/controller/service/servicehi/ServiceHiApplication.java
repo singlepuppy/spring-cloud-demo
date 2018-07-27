@@ -1,11 +1,16 @@
 package com.jsst.controller.service.servicehi;
 
 import brave.sampler.Sampler;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
+import org.springframework.cloud.netflix.hystrix.EnableHystrix;
+import org.springframework.cloud.netflix.hystrix.dashboard.EnableHystrixDashboard;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,14 +22,18 @@ import java.util.logging.Logger;
 
 @SpringBootApplication
 @EnableEurekaClient
+@EnableDiscoveryClient
 @RestController
+@EnableHystrix  //开启熔断器
+@EnableHystrixDashboard //开启熔断监控
+@EnableCircuitBreaker
 public class ServiceHiApplication {
 
 
     public static void main(String[] args) {
         SpringApplication.run( ServiceHiApplication.class, args );
     }
-
+/*********************************服务注册+熔断例子***********************/
 //    @Value("${server.port}")
 //    String port;
 
@@ -32,34 +41,49 @@ public class ServiceHiApplication {
 //    public String home(@RequestParam(value = "name", defaultValue = "forezp") String name) {
 //        return "hi " + name + " ,i am from port:" + port;
 //    }
-
-    private static final Logger LOG = Logger.getLogger(ServiceHiApplication.class.getName());
-    @Autowired
-    private RestTemplate restTemplate;
-
-    @Bean
-    public RestTemplate getRestTemplate(){
-        return new RestTemplate();
-    }
+/***********************************zipkin例子************************************************/
+//    private static final Logger LOG = Logger.getLogger(ServiceHiApplication.class.getName());
+//    @Autowired
+//    private RestTemplate restTemplate;
+//
+//    @Bean
+//    public RestTemplate getRestTemplate(){
+//        return new RestTemplate();
+//    }
+//
+//    @RequestMapping("/hi")
+//    public String callHome(){
+//        LOG.log(Level.INFO, "calling trace service-hi  ");
+//        return restTemplate.getForObject("http://localhost:8764/miya", String.class);
+//    }
+//
+//    @RequestMapping("/info")
+//    public String info(){
+//        LOG.log(Level.INFO, "calling trace service-hi ");
+//        return "i'm service-hi";
+//
+//    }
+//
+//    @Bean
+//    public Sampler defaultSampler() {
+//        return Sampler.ALWAYS_SAMPLE;
+//    }
+/*******************************熔断监控例子******************************************/
+    /**
+     * 访问地址 http://localhost:8763/actuator/hystrix.stream
+     * @param args
+     */
+    @Value("${server.port}")
+    String port;
 
     @RequestMapping("/hi")
-    public String callHome(){
-        LOG.log(Level.INFO, "calling trace service-hi  ");
-        return restTemplate.getForObject("http://localhost:8764/miya", String.class);
+    @HystrixCommand(fallbackMethod = "hiError")   //断路点声明
+    public String home(@RequestParam(value = "name", defaultValue = "forezp") String name) {
+        return "hi " + name + " ,i am from port:" + port;
     }
 
-    @RequestMapping("/info")
-    public String info(){
-        LOG.log(Level.INFO, "calling trace service-hi ");
-        return "i'm service-hi";
-
+    public String hiError(String name) {
+        return "hi,"+name+",sorry,error!";
     }
-
-    @Bean
-    public Sampler defaultSampler() {
-        return Sampler.ALWAYS_SAMPLE;
-    }
-
-
 
 }

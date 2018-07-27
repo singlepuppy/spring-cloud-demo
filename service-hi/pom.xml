@@ -31,6 +31,30 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-zipkin</artifactId>
         </dependency>
+
+        <!--做熔断监控-->
+        <!--spring-cloud-starter-netflix-hystrix-->
+        <!--spring-cloud-starter-netflix-hystrix-dashboard-->
+        <!--spring-boot-starter-actuator-->
+        <!--三个组件必不可缺-->
+
+        <!--Spring cloud 熔断器/断路器-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
+        </dependency>
+
+        <!--Hystrix Dashboard是作为断路器状态的一个组件，提供了数据监控和友好的图形化界面-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-hystrix-dashboard</artifactId>
+        </dependency>
+
+        <!--Actuator是Spring Boot提供的对应用系统的自省和监控的集成功能,可以对应用系统进行配置查看、相关功能统计等-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
