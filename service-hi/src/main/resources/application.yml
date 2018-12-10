@@ -12,11 +12,22 @@ eureka:
     serviceUrl:
       defaultZone: http://localhost:8761/eureka/
 
-management:
+management :
+  server:
+    port: 9001    #actuator配置   actuator的访问端口hostname:port/actuator/
+  security:
+    basic:
+      enable: false;
+  endpoint:
+    health:
+      show-details: always   #actuator配置  设置进入/actuator/health显示健康信息的详情信息，不设置则只显示status	"UP"
+    shutdown:
+      enabled: true
   endpoints:
     web:
       exposure:
-        include: "*"
-      cors:
-        allowed-origins: "*"
-        allowed-methods: "*"
+        include: '*'   #actuator配置  include代表暴露哪些端点 exclude代表不暴露哪些端点（端点即监控信息类别）
+    cors:
+      allowed-origins: '*'  #定义跨域资源共享的授权访问，可以定义多个路径，默认的没有进行配置。
+      allowed-methods: '*'  #定义可以跨域资源共享访问的方法，如GET,POST等，可以同时定义多个方法。
+
